@@ -56,14 +56,14 @@ class OpenGLWidget(Control):
     #--------------------------------------------------------------------------
     # Observers
     #--------------------------------------------------------------------------
-     @observe('renderer', )
+    @observe('renderer', )
     def _update_proxy(self, change):
         """ An observer which sends state change to the proxy.
         """
         # The superclass handler implementation is sufficient.
         super(OpenGLWidget, self)._update_proxy(change)
 
-     @observe('update')
+    @observe('update')
     def _update_canvas(self, change):
         """ An observer which propagates update events to the widget
         """

@@ -4,11 +4,11 @@ import numpy as np
 from atom.api import Atom, Int
 from OpenGL.GL import glViewport
 
-from .geometry import Box
+from .geometry import Rect
 
 class Viewport(Atom):
 
-    box = Box(x=0, y=0, width=800, height=600)
+    box = Rect(x=0, y=0, width=800, height=600)
 
     def setup(self):
         box = self.box

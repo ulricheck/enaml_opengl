@@ -1,0 +1,48 @@
+import numpy as np
+
+# add factory
+from enaml.qt import qt_factories
+def create_openglwidget():
+    from enaml_opengl.qt.qt_opengl_widget import QtOpenGLWidget
+    return QtOpenGLWidget
+
+qt_factories.QT_FACTORIES['OpenGLWidget'] = create_openglwidget
+
+
+from enaml.application import Application
+
+from enaml.widgets.api import MainWindow, Container
+from enaml_opengl.widgets.opengl_widget import OpenGLWidget
+
+from enaml_opengl.renderer import MonoRenderer
+from enaml_opengl.camera import PinholeCamera
+from enaml_opengl.viewport import PerspectiveViewport
+
+from enaml_opengl.nodes.coordinate_axes import AxisItem
+
+
+
+viewport = PerspectiveViewport()
+camera = PinholeCamera(viewport=viewport)
+
+# modify modelview-matrix
+camera.modelview_matrix[0:3, 3] = np.array([0., 0., 5.])
+print camera.modelview_matrix
+
+
+nodes = [
+    AxisItem()
+]
+
+renderer = MonoRenderer(camera=camera, nodes=nodes)
+
+enamldef Main(MainWindow):
+    title = 'OpenGL Widget Test'
+
+    Container:
+        OpenGLWidget:
+            renderer = renderer
+            mouse_press_event::
+                print "mouse press"
+
+

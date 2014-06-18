@@ -98,7 +98,7 @@ class GraphicsNode(SceneGraphNode):
     gl_options = Dict()
 
     def setup_gl(self):
-        for k,v in self.gl_options.items()
+        for k,v in self.gl_options.items():
             if v is None:
                 continue
 

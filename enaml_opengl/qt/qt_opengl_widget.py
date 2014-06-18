@@ -25,7 +25,7 @@ class QtOGLWidget(QtOpenGL.QGLWidget):
 
         # eventually handle repeating keys with timer as in pyqtgraph GLViewWidget
 
-        self.widget.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.makeCurrent()
 
     # opengl events

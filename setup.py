@@ -15,11 +15,11 @@ setup(name = "enaml_opengl",
       packages = find_packages('.'),
       package_data = {'enaml_opengl' : ['views/*.enaml']},
       license = "BSD License",
-      requires=(
-        'pyopengl>=3.1b3',
-        'atom>=0.3.9',
-        'enaml>=0.9.7',
-      ),
+      requires=[
+        'pyopengl',
+        'atom',
+        'enaml',
+      ],
       zip_safe=False,
       long_description = """\
 Use OpenGL in enaml applications""",

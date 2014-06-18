@@ -50,4 +50,3 @@ class AxisItem(GraphicsNode):
         glVertex3f(0, 0, 0)
         glVertex3f(v.x, 0, 0)
         glEnd()
-        
