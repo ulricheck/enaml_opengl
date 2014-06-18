@@ -17,27 +17,25 @@ class Camera(Atom):
     projection_matrix = Typed(np.ndarray)
 
     #: the modelview matrix
-    modelview_matrix  = Typed(np.ndarray)
+    modelview_matrix  = Typed(np.ndarray, factory=lambda: np.identity(4))
 
     #: initialize default viewport
     def _default_viewport(self):
         return PerspectiveViewport()
 
-    #: initialize default projection matrix
+    #: initialize default projection matrix as pinhole camera
     def _default_projection_matrix(self):
-        # XXX invalid projection matrix !!!
-        return np.eye(4)
+        vp = self.viewport
+        left, right, bottom, top = self._device_coordinates()
+        return vp.calculate_projection_matrix(left, right, bottom, top,
+                                              0.001, 1000., 60)
 
-    #: initialize default modelview matrix
-    def _default_modelview_matrix(self):
-        return np.eye(4)
-
-    def render(self):
+    def setup(self):
         """
         render projection and modelview matrix
         :return: None
         """
-        self.viewport.render()
+        self.viewport.setup()
 
         # setup projection
         glMatrixMode(GL_PROJECTION)
@@ -48,6 +46,18 @@ class Camera(Atom):
         glLoadIdentity()
         glMultMatrixf(self.modelview_matrix.transpose())
 
+
+    def _device_coordinates(self):
+        vp = self.viewport.box
+
+        r = self.near * np.tan(self.fov * 0.5 * np.pi / 180.)
+        t = r * vp.height / vp.width
+
+        left = r * (vp.x * (2. / vp.width) - 1)
+        right = r * (vp.width * (2. / vp.width) - 1)
+        bottom = t * (vp.y * (2. / vp.height) - 1)
+        top = t * (vp.height * (2. / vp.height) - 1)
+        return (left, right, bottom, top)
 
 
 class PinholeCamera(Camera):
@@ -66,15 +76,6 @@ class PinholeCamera(Camera):
         recomputes the projection matrix if any of the inputs chnage
         :return:
         """
-        vp = self.viewport
-
-        r = self.near * np.tan(self.fov * 0.5 * np.pi / 180.)
-        t = r * vp.height / vp.width
-
-        left = r * (vp.x * (2. / vp.width) - 1)
-        right = r * (vp.width * (2. / vp.width) - 1)
-        bottom = t * (vp.y * (2. / vp.height) - 1)
-        top = t * (vp.height * (2. / vp.height) - 1)
-
+        left, right, bottom, top = self._device_coordinates()
         self.projection_matrix = self.viewport.calculate_projection_matrix(left, right, bottom, top,
                                                                            self.near, self.far, self.fov)

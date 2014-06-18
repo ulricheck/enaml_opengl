@@ -1,53 +1,50 @@
 __author__ = 'jack'
 
-from atom.api import Value, Typed, ForwardTyped, List, observe, set_default, Event
-
+from atom.api import Value, Typed, ForwardTyped, observe, set_default, Event
 from enaml.core.declarative import d_
-
 from enaml.widgets.control import Control, ProxyControl
 
-from enaml_opengl.widgets.viewport import Viewport
-from enaml_opengl.widgets.camera import Camera
+
+from enaml_opengl.renderer import Renderer
+from enaml_opengl.events import KeyEvent, MouseEvent, WheelEvent
+from enaml_opengl.geometry import Size
 
 
-class ProxyOpenGLWdiget(ProxyControl):
+class ProxyOpenGLWidget(ProxyControl):
     """ The abstract definition of a proxy QtOpenGL.QGLWidget object.
 
     """
     #: A reference to the OpenGLWidget declaration.
     declaration = ForwardTyped(lambda: OpenGLWidget)
 
-    def set_camera(self, camera):
+    def set_renderer(self, renderer):
          raise NotImplementedError
 
-    def set_scene(self, scene):
-         raise NotImplementedError
-
-    def set_background_color(self, bgcolor):
-         raise NotImplementedError
-
+    def update(self):
+        raise NotImplementedError
 
 
 class OpenGLWidget(Control):
     """ An extremely simple widget for displaying OpenGL.
 
     """
-    #: the camera / viewpoint
-    camera = d_(Typed(Camera))
 
-    #: the scene to be rendered (Enforce types ?)
-    scene = d_(Value())
+    #: size of the canvas in pixels
+    size = d_(Typed(Size))
 
-    #: background_color of opengl widget
-    background_color = d_(Value())
+    #: the renderer for the widget
+    renderer = d_(Typed(Renderer))
+
+    #: trigger a widget update
+    update = d_(Event(), writable=False)
 
     #: interaction events
-    mouse_press_event = d_(Event(), writable=False)
-    mouse_release_event = d_(Event(), writable=False)
-    mouse_wheel_event = d_(Event(), writable=False)
-    mouse_move_event = d_(Event(), writable=False)
-    key_press_event = d_(Event(), writable=False)
-    key_release_event = d_(Event(), writable=False)
+    mouse_press_event = d_(Event(MouseEvent), writable=False)
+    mouse_release_event = d_(Event(MouseEvent), writable=False)
+    mouse_wheel_event = d_(Event(WheelEvent), writable=False)
+    mouse_move_event = d_(Event(MouseEvent), writable=False)
+    key_press_event = d_(Event(KeyEvent), writable=False)
+    key_release_event = d_(Event(KeyEvent), writable=False)
 
     #: An opengl control expands freely in height and width by default.
     hug_width = set_default('ignore')
@@ -56,17 +53,18 @@ class OpenGLWidget(Control):
     #: A reference to the ProxyOpenGLWidget object
     proxy = Typed(ProxyOpenGLWidget)
 
-
-    #: initialize default camera
-    def _default_camera(self):
-        return Camera()
-
     #--------------------------------------------------------------------------
     # Observers
     #--------------------------------------------------------------------------
-     @observe('camera', 'scene', 'background_color')
+     @observe('renderer', )
     def _update_proxy(self, change):
         """ An observer which sends state change to the proxy.
         """
         # The superclass handler implementation is sufficient.
         super(OpenGLWidget, self)._update_proxy(change)
+
+     @observe('update')
+    def _update_canvas(self, change):
+        """ An observer which propagates update events to the widget
+        """
+        self.proxy.update()

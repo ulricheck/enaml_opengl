@@ -1,14 +1,15 @@
 __author__ = 'jack'
 
-from enaml.qt import QtCore, QtGui, QtOpenGL
-from OpenGL.GL import *
-import OpenGL.GL.framebufferobjects as glfbo
+import numpy as np
 
-from atom.api import Typed, Value, Dict, List, Event
+from enaml.qt import QtCore, QtOpenGL
+from atom.api import Typed, Int
 from enaml.qt.qt_control import QtControl
 
 from enaml_opengl.widgets.opengl_widget import ProxyOpenGLWidget
-from enaml_opengl.widgets.camera import Camera
+from enaml_opengl.events import KeyEvent, MouseEvent, WheelEvent
+from enaml_opengl.renderer import Renderer
+from enaml_opengl.geometry import Size
 
 
 class QtOGLWidget(QtOpenGL.QGLWidget):
@@ -51,9 +52,13 @@ class QtOGLWidget(QtOpenGL.QGLWidget):
         self.proxy.on_mouse_wheel_event(ev)
 
     def keyPressEvent(self, ev):
+        # repeat keys handling ?
+        #ev.accept()
         self.proxy.on_key_press_event(ev)
 
     def keyReleaseEvent(self, ev):
+        # repeat keys handling ?
+        #ev.accept()
         self.proxy.on_key_release_event(ev)
 
 
@@ -66,10 +71,7 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
     #: A reference to the widget created by the proxy.
     widget = Typed(QtOGLWidget)
 
-    camera = Typed(Camera)
-    scene = Value()
-
-    background_color = Typed(np.ndarray)
+    renderer = Typed(Renderer)
 
     #: Cyclic notification guard. This a bitfield of multiple guards.
     _guard = Int(0)
@@ -100,27 +102,48 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
     # OpenGLWidget callbacks
     #--------------------------------------------------------------------------
     def on_initialize_gl(self):
-        pass
+        if self.renderer:
+            self.renderer.initialize_gl()
 
 
     def on_resize_gl(self, w, h):
-        vp = self.camera.viewport
-        # combine into one transaction
-        vp.width = w
-        vp.height = h
-
-
+        if self.renderer:
+            self.renderer.resize_gl(Size(w,h))
 
     def on_paint_gl(self):
+        if self.renderer:
+            self.renderer.paint_gl()
 
-        # set projection and modelview matrix
-        self.camera.render()
 
-        # clear screen
-        glClearColor(*self.declaration.background_color.flatten())
-        glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT )
+    # just pass the interaction events through for now
+    def on_mouse_press_event(self, ev):
+        self.declaration.mouse_press_event(MouseEvent.from_qt(ev))
 
-        self.scene.render()
+    def on_mouse_release_event(self, ev):
+        self.declaration.mouse_release_event(MouseEvent.from_qt(ev))
+
+    def on_mouse_wheel_event(self, ev):
+        self.declaration.mouse_wheel_event(WheelEvent.from_qt(ev))
+
+    def on_mouse_move_event(self, ev):
+        self.declaration.mouse_move_event(MouseEvent.from_qt(ev))
+
+    def on_key_press_event(self, ev):
+        self.declaration.key_press_event(KeyEvent.from_qt(ev))
+
+    def on_key_release_event(self, ev):
+        self.declaration.key_release_event(KeyEvent.from_qt(ev))
+
+
+    #--------------------------------------------------------------------------
+    # OpenGLWidget API
+    #--------------------------------------------------------------------------
+    def set_renderer(self, renderer):
+        if self.renderer:
+            self.unobserve("renderer.trigger_update", self.update)
+        self.renderer = renderer
+        #self.update()
+        self.observe("renderer.trigger_update", self.update)
 
 
     def update(self):
@@ -128,35 +151,3 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
         notify OpenGL widget to redraw
         """
         self.widget.update()
-
-
-    # just pass the interaction events through for now
-    def on_mouse_press_event(self, ev):
-        self.declaration.mouse_press_event(ev)
-
-    def on_mouse_release_event(self, ev):
-        self.declaration.mouse_release_event(ev)
-
-    def on_mouse_wheel_event(self, ev):
-        self.declaration.mouse_wheel_event(ev)
-
-    def on_mouse_move_event(self, ev):
-        self.declaration.mouse_move_event(ev)
-
-    def on_key_press_event(self, ev):
-        self.declaration.key_press_event(ev)
-
-    def on_key_release_event(self, ev):
-        self.declaration.key_release_event(ev)
-
-
-    #--------------------------------------------------------------------------
-    # OpenGLWidget API
-    #--------------------------------------------------------------------------
-    def set_camera(self, camera):
-        self.camera = camera
-        self.update()
-
-    def set_scene(self, scene):
-         self.scene = scene
-         self.update()

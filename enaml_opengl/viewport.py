@@ -4,16 +4,15 @@ import numpy as np
 from atom.api import Atom, Int
 from OpenGL.GL import glViewport
 
+from .geometry import Box
+
 class Viewport(Atom):
 
-    x = Int(0)
-    y = Int(0)
+    box = Box(x=0, y=0, width=800, height=600)
 
-    width = Int(800)
-    height = Int(600)
-
-    def render(self):
-        glViewport(self.x, self.y, self.width, self.height)
+    def setup(self):
+        box = self.box
+        glViewport(box.x, box.y, box.width, box.height)
 
     def calculate_projection_matrix(self, left, right, bottom, top, near, far, fov=None):
         raise NotImplementedError
