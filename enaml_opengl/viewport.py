@@ -1,14 +1,14 @@
 from __future__ import division
 
 import numpy as np
-from atom.api import Atom, Int
+from atom.api import Atom, Int, Value
 from OpenGL.GL import glViewport
 
 from .geometry import Rect
 
 class Viewport(Atom):
 
-    box = Rect(x=0, y=0, width=800, height=600)
+    box = Value(Rect, factory=lambda:Rect(x=0, y=0, width=800, height=600))
 
     def setup(self):
         box = self.box
@@ -20,20 +20,25 @@ class Viewport(Atom):
 class OrthoViewport(Viewport):
 
     def calculate_projection_matrix(self, left, right, bottom, top, near, far, fov=None):
-        tx = -1.*float(right + left)/float(right - left)
-        ty = -1.*float(top + bottom)/float(top - bottom)
-        tz = -1.*float(far + near)/float(far - near)
-        return np.array([2./float(right-left), 0, 0, tx,
-                         0, 2./float(top-bottom), 0, ty,
-                         0, 0, -2./float(far-near), tz,
-                         0, 0, 0, 1.], dtype=np.float64).reshape(4,4)
+        mp = np.eye(4)
+        mp.itemset(0, 2 / (right - left))
+        mp.itemset(3, -(right + left) / (right - left))
+        mp.itemset(5, 2 / (top - bottom))
+        mp.itemset(7, -(top + bottom) / (top - bottom))
+        mp.itemset(10, -2 / (far - near))
+        mp.itemset(11, -(far + near) / (far - near))
+        return mp
 
 class PerspectiveViewport(Viewport):
 
     def calculate_projection_matrix(self, left, right, bottom, top, near, far, fov):
-        f = 1./np.tanh(fov/2.)
-        aspect = float(right - left) / float(bottom - top)
-        return np.array([f/aspect, 0, 0, 0,
-                         0, f, 0, 0,
-                         0, 0, float(far+near)/float(near-far), float(2*far*near)/float(near-far),
-                         0, 0, -1, 0], dtype=np.float64).reshape(4,4)
+        mp = np.eye(4)
+        mp.itemset(0, 2 * near / (right - left))
+        mp.itemset(2, (right + left) / (right - left))
+        mp.itemset(5, 2 * near / (top - bottom))
+        mp.itemset(6, (top + bottom) / (top - bottom))
+        mp.itemset(10, -(far + near) / (far - near))
+        mp.itemset(11, -(2 * far * near) / (far - near))
+        mp.itemset(14, -1)
+        mp.itemset(15, 0)
+        return mp

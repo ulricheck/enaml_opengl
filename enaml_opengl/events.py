@@ -78,8 +78,8 @@ class WheelEvent(InputEvent):
     # Qt::Vertical	0x2
     orientation = Enum("horizontal", "vertical")
 
-    global_pos   = Typed(Pos)
-    pos   = Typed(Pos)
+    global_position   = Typed(Pos)
+    position   = Typed(Pos)
 
     @classmethod
     def from_qt(cls, ev):
@@ -113,7 +113,9 @@ class KeyEvent(InputEvent):
 
     count = Int()
     is_auto_repeat = Bool()
+    is_modifier = Bool()
     key = Int()
+
 
     @property
     def text(self):
@@ -121,7 +123,10 @@ class KeyEvent(InputEvent):
 
     @classmethod
     def from_qt(cls, ev):
+        is_mod = ev.key() in [QtCore.Qt.AltModifier, QtCore.Qt.ControlModifier,
+                              QtCore.Qt.ShiftModifier, QtCore.Qt.MetaModifier]
         return cls(modifiers=cls._modifiers_from_qt(ev),
+                   is_modifier=is_mod,
                    key=ev.key(),
                    is_auto_repeat=ev.isAutoRepeat(),
                    count=ev.count(),

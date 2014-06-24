@@ -1,16 +1,32 @@
 __author__ = 'jack'
 import numpy as np
-from atom.api import Atom, List, Dict, Typed, Bool, Float, Unicode, ForwardTyped
+from atom.api import Atom, List, Dict, Typed, Bool, Float, Unicode, ForwardTyped, observe
+from enaml.core.api import Declarative
 from OpenGL.GL import *
 from OpenGL import GL
 
 from .util import print_exception
 
 
-class SceneGraphNode(Atom):
+class SceneGraphNode(Declarative):
 
-    #: node id
-    id = Unicode()
+    @property
+    def node_path(self):
+        return "/".join(a.name for a in reversed([self, ] + list(self.traverse_ancestors())))
+
+
+    def render(self, context):
+        for item in self.traverse():
+            if isinstance(obj, SceneGraphNode):
+                obj.render(context)
+
+
+
+
+
+
+
+class GraphicsSceneGraphNode(SceneGraphNode):
 
     #: is node visible
     visible = Bool(True)
@@ -21,26 +37,15 @@ class SceneGraphNode(Atom):
     #: local transform
     transform = Typed(np.ndarray, factory=lambda: np.identity(4))
 
-    #: parent node
-    parent = ForwardTyped(lambda: SceneGraphNode)
-
-    #: children of this node
-    children = List(ForwardTyped(lambda: SceneGraphNode))
-
-    @property
-    def node_path(self):
-        if self.parent is not None:
-            return "%s/%s" % (self.parent.node_path, self.id)
-        return id
 
     def initialize(self):
         self.initialize_node()
-        for item in self.children:
-            item.initialize()
+        super(SceneGraphNode, self).initialize()
+
 
     def render(self, context):
         # render all items including self in the correct order
-        items = self.children[:]
+        items = [c for c in self.children if isinstance(c, SceneGraphNode)]
         items.append(self)
 
         # sort by depth
@@ -59,7 +64,7 @@ class SceneGraphNode(Atom):
                 except:
                     print_exception()
                     msg = "Error while drawing item %s." % self.node_path
-                    print(msg)
+                    print msg
                 finally:
                     glPopAttrib()
             else:
@@ -72,12 +77,6 @@ class SceneGraphNode(Atom):
                     glMatrixMode(GL_MODELVIEW)
                     glPopMatrix()
 
-
-    # management
-    def add_child(self, node):
-        node.parent = self
-        # XXX does append notifiy on change ???
-        self.children.append(node)
 
 
     # implementation stubs
@@ -92,7 +91,7 @@ class SceneGraphNode(Atom):
         pass
 
 
-class GraphicsNode(SceneGraphNode):
+class GraphicsNode(GraphicsSceneGraphNode):
 
     #: options to be set before rendering
     gl_options = Dict()

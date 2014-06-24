@@ -26,12 +26,15 @@ viewport = PerspectiveViewport()
 camera = PinholeCamera(viewport=viewport)
 
 # modify modelview-matrix
-camera.modelview_matrix[0:3, 3] = np.array([0., 0., 5.])
+mv = camera.modelview_matrix
+mv[0:3, 3] = np.array([0., 0., 5.])
+camera.modelview_matrix = np.linalg.inv(mv)
 print camera.modelview_matrix
+print camera.projection_matrix
 
 
 nodes = [
-    AxisItem()
+    AxisItem(name="ai1", line_width=10.)
 ]
 
 renderer = MonoRenderer(camera=camera, nodes=nodes)
@@ -41,8 +44,20 @@ enamldef Main(MainWindow):
 
     Container:
         OpenGLWidget:
+            minimum_size = (800, 600)
             renderer = renderer
             mouse_press_event::
-                print "mouse press"
+                print "mouse press", change["value"].position
+            mouse_move_event::
+                print "mouse move", change["value"].position
+            mouse_wheel_event::
+                print "mouse wheel", change["value"].delta
+            key_press_event::
+                ev = change["value"]
+                if not ev.is_modifier:
+                    print "key press", ev.text
+                    self.update()
 
-
+            initialized::
+                print "opengl widget is initialized"
+                renderer.trigger_update()

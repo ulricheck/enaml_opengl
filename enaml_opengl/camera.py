@@ -46,7 +46,6 @@ class Camera(Atom):
         glLoadIdentity()
         glMultMatrixf(self.modelview_matrix.transpose())
 
-
     def _device_coordinates(self):
         vp = self.viewport.box
 
@@ -63,12 +62,11 @@ class Camera(Atom):
 class PinholeCamera(Camera):
 
     near = Float(0.001)
-    far  = Float(1000.)
+    far  = Float(10.)
     fov  = Float(60)
 
 
-    @observe("viewport.x", "viewport.y", "viewport.width", "viewport.height",
-             "near", "far", "fov")
+    @observe("viewport.box", "near", "far", "fov")
     def _update_projection_matrix(self, change):
         """
         :param change:

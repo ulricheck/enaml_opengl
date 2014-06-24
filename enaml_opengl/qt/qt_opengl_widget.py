@@ -84,8 +84,10 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
         """ Create the underlying html widget.
 
         """
+        if self.declaration.renderer is not None:
+            self.set_renderer(self.declaration.renderer)
+        widget = QtOGLWidget(self, self.parent_widget(),)
 
-        widget = QtOGLWidget(self, self.parent_widget())
         self.widget = widget
 
 
@@ -139,15 +141,11 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
     # OpenGLWidget API
     #--------------------------------------------------------------------------
     def set_renderer(self, renderer):
-        if self.renderer:
-            self.unobserve("renderer.trigger_update", self.update)
         self.renderer = renderer
-        #self.update()
-        self.observe("renderer.trigger_update", self.update)
 
 
     def update(self):
         """
         notify OpenGL widget to redraw
         """
-        self.widget.update()
+        self.widget.updateGL()
