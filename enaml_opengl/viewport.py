@@ -2,11 +2,14 @@ from __future__ import division
 
 import numpy as np
 from atom.api import Atom, Int, Value
+from enaml.core.api import Declarative
+from enaml.core.declarative import d_
+
 from OpenGL.GL import glViewport
 
 from .geometry import Rect
 
-class Viewport(Atom):
+class Viewport(Declarative):
 
     box = Value(Rect, factory=lambda:Rect(x=0, y=0, width=800, height=600))
 

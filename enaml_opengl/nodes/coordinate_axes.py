@@ -2,7 +2,7 @@ __author__ = 'jack'
 import numpy as np
 from atom.api import Typed, List, Float, Bool
 from OpenGL.GL import *
-from enaml_opengl.scenegraph_node import GraphicsNode
+from enaml_opengl.scenegraph_node import GraphicsNode, d_
 from enaml_opengl.geometry import Vec3d
 
 class AxisItem(GraphicsNode):
@@ -15,10 +15,10 @@ class AxisItem(GraphicsNode):
     z=green
     """
 
-    antialias  = Bool(True)
-    size       = Typed(Vec3d, factory=lambda: Vec3d(1.0, 1.0, 1.0))
-    line_width = Float(1.0)
-    colors     = List()
+    antialias  = d_(Bool(True))
+    size       = d_(Typed(Vec3d, factory=lambda: Vec3d(1.0, 1.0, 1.0)))
+    line_width = d_(Float(1.0))
+    colors     = d_(List())
 
     def _default_colors(self):
         return [(1, 0, 0, 0.6),  # x red

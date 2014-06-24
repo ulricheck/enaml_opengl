@@ -2,6 +2,8 @@ __author__ = 'jack'
 import numpy as np
 from atom.api import Atom, List, Dict, Typed, Bool, Float, Unicode, ForwardTyped, observe
 from enaml.core.api import Declarative
+from enaml.core.declarative import d_
+
 from OpenGL.GL import *
 from OpenGL import GL
 
@@ -29,13 +31,13 @@ class SceneGraphNode(Declarative):
 class GraphicsSceneGraphNode(SceneGraphNode):
 
     #: is node visible
-    visible = Bool(True)
+    visible = d_(Bool(True))
 
     #: depth of this node
-    depth = Float(0)
+    depth = d_(Float(0))
 
     #: local transform
-    transform = Typed(np.ndarray, factory=lambda: np.identity(4))
+    transform = d_(Typed(np.ndarray, factory=lambda: np.identity(4)))
 
 
     def initialize(self):
@@ -94,7 +96,7 @@ class GraphicsSceneGraphNode(SceneGraphNode):
 class GraphicsNode(GraphicsSceneGraphNode):
 
     #: options to be set before rendering
-    gl_options = Dict()
+    gl_options = d_(Dict())
 
     def setup_gl(self):
         for k,v in self.gl_options.items():

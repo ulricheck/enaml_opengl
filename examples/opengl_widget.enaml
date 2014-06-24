@@ -22,25 +22,30 @@ from enaml_opengl.nodes.coordinate_axes import AxisItem
 
 
 
-viewport = PerspectiveViewport()
-camera = PinholeCamera(viewport=viewport)
-
-# modify modelview-matrix
-mv = camera.modelview_matrix
+# initialize modelview-matrix
+mv = np.eye(4)
 mv[0:3, 3] = np.array([0., 0., 5.])
-camera.modelview_matrix = np.linalg.inv(mv)
-print camera.modelview_matrix
-print camera.projection_matrix
-
-
-nodes = [
-    AxisItem(name="ai1", line_width=10.)
-]
-
-renderer = MonoRenderer(camera=camera, nodes=nodes)
+mv = np.linalg.inv(mv)
 
 enamldef Main(MainWindow):
     title = 'OpenGL Widget Test'
+
+    AxisItem: ai1:
+        line_width = 3.0
+
+    #ArcballCameraControl: arcball:
+    #   sensitivity = 1.0
+
+    PinholeCamera: camera:
+        viewport = PerspectiveViewport()
+        modelview_matrix = mv
+        #modelview_matrix = arcball.inv_modelview_matrix
+
+    MonoRenderer: renderer:
+        camera = camera
+        nodes << [ai1, ]
+
+
 
     Container:
         OpenGLWidget:
@@ -48,10 +53,13 @@ enamldef Main(MainWindow):
             renderer = renderer
             mouse_press_event::
                 print "mouse press", change["value"].position
+                #arcball.mouse_pressed(change["value"])
             mouse_move_event::
                 print "mouse move", change["value"].position
+                #arcball.mouse_moved(change["value"])
             mouse_wheel_event::
                 print "mouse wheel", change["value"].delta
+                #arcball.mouse_wheel(change["value"])
             key_press_event::
                 ev = change["value"]
                 if not ev.is_modifier:

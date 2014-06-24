@@ -1,23 +1,25 @@
 __author__ = 'jack'
 import numpy as np
 from atom.api import Atom, Typed, Signal, List, observe
+from enaml.core.api import Declarative
+from enaml.core.declarative import d_
 from OpenGL.GL import *
 from .viewport import Viewport, PerspectiveViewport
 from .camera import Camera, PinholeCamera
 from .geometry import Size, Rect
 from .scenegraph_node import SceneGraphNode
 
-class Renderer(Atom):
+class Renderer(Declarative):
 
     #: items
-    nodes = List(SceneGraphNode)
+    nodes = d_(List(SceneGraphNode))
 
 
     #: the canvas size as reported by resizeGL
-    canvas_size = Typed(Size)
+    canvas_size = d_(Typed(Size))
 
     #: background color
-    background_color = Typed(np.ndarray)
+    background_color = d_(Typed(np.ndarray))
 
     #: trigger an update to
     trigger_update = Signal()
@@ -51,7 +53,7 @@ class Renderer(Atom):
 
 class MonoRenderer(Renderer):
     #: the camera / viewpoint
-    camera = Typed(Camera)
+    camera = d_(Typed(Camera))
 
     def render(self):
         self.camera.setup()

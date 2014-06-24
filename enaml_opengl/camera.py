@@ -2,22 +2,25 @@ __author__ = 'jack'
 import numpy as np
 
 from atom.api import Atom, Typed, Float, observe
+from enaml.core.api import Declarative
+from enaml.core.declarative import d_
+
 from OpenGL.GL import (glMatrixMode, glLoadIdentity, glMultMatrixf,
                        GL_PROJECTION, GL_MODELVIEW)
 
 from .viewport import Viewport, PerspectiveViewport
 
 
-class Camera(Atom):
+class Camera(Declarative):
 
     #: the camera viewport
-    viewport = Typed(Viewport)
+    viewport = d_(Typed(Viewport))
 
     #: the projection matrix
-    projection_matrix = Typed(np.ndarray)
+    projection_matrix = d_(Typed(np.ndarray))
 
     #: the modelview matrix
-    modelview_matrix  = Typed(np.ndarray, factory=lambda: np.identity(4))
+    modelview_matrix  = d_(Typed(np.ndarray, factory=lambda: np.identity(4)))
 
     #: initialize default viewport
     def _default_viewport(self):
@@ -61,9 +64,9 @@ class Camera(Atom):
 
 class PinholeCamera(Camera):
 
-    near = Float(0.001)
-    far  = Float(10.)
-    fov  = Float(60)
+    near = d_(Float(0.001))
+    far  = d_(Float(10.))
+    fov  = d_(Float(60))
 
 
     @observe("viewport.box", "near", "far", "fov")
