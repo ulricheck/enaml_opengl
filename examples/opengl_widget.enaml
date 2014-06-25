@@ -24,7 +24,7 @@ from enaml_opengl.arcball import ArcballCameraControl
 
 # initialize modelview-matrix
 mv = np.eye(4)
-mv[0:3, 3] = np.array([0., 0., 5.])
+mv[:3, 3] = np.array([0., 0., 5.])
 
 enamldef Main(MainWindow):
     title = 'OpenGL Widget Test'
@@ -34,22 +34,15 @@ enamldef Main(MainWindow):
 
     PinholeCamera: camera:
         viewport = PerspectiveViewport()
-        modelview_matrix = mv
         modelview_matrix::
             print "repaint"
             glwin1.update()
-
-    ArcballCameraControl: arcball:
-        window_size << glwin1.size
-        start_transform = camera.modelview_matrix
-        new_transform := camera.modelview_matrix
 
 
 
     MonoRenderer: renderer:
         camera = camera
         nodes << [ai1, ]
-
 
 
     Container:
@@ -61,4 +54,11 @@ enamldef Main(MainWindow):
 
             initialized::
                 renderer.trigger_update()
+
+    ArcballCameraControl: arcball:
+        modelview_matrix := camera.modelview_matrix
+        window_size << renderer.canvas_size
+
+        position = np.array([0, 0, 5, 0])
+        orientation = np.eye(4)
 

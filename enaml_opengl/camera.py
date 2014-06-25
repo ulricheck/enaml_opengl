@@ -44,11 +44,11 @@ class Camera(Declarative):
         # setup projection
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        glMultMatrixf(self.projection_matrix.transpose())
+        glMultMatrixf(self.projection_matrix.T)
 
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
-        glMultMatrixf(self.inv_modelview_matrix.transpose())
+        glMultMatrixf(self.inv_modelview_matrix.T)
 
     def _device_coordinates(self):
         vp = self.viewport.box

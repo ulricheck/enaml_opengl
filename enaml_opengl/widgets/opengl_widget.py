@@ -35,9 +35,6 @@ class OpenGLWidget(Control, MouseHandler, KeyHandler):
 
     """
 
-    #: size of the canvas in pixels
-    size = d_(Typed(Size))
-
     #: the renderer for the widget
     renderer = d_(Typed(Renderer))
 
