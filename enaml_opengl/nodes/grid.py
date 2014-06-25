@@ -1,6 +1,6 @@
 __author__ = 'jack'
 import numpy as np
-from atom.api import Typed
+from atom.api import Typed, observe
 from OpenGL.GL import *
 from enaml_opengl.scenegraph_node import GraphicsNode, d_
 from enaml_opengl.geometry import Vec3d
@@ -11,6 +11,10 @@ class GridItem(GraphicsNode):
     """
 
     size = d_(Typed(Vec3d, factory=lambda: Vec3d(1.0, 1.0, 1.0)))
+
+    @observe("size")
+    def _gi_trigger_update(self, change):
+        self.trigger_update()
 
     def render_node(self, context):
         super(GridItem, self).render_node(context)

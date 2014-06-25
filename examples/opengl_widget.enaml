@@ -39,7 +39,7 @@ enamldef Main(MainWindow):
             pos = np.asarray([[0,0,0],[0,0.5,0],[0,0.5,0.5],[-0.5,0.5,0],[-0.5,0,-0.5],[-0.5,0,0],])
             color = [1.0, 0.0, 0.0, 0.5]
 
-        BoxItem:
+        BoxItem: bitem:
             size = Vec3d(0.4, 0.2, 0.3)
 
         ScatterPlotItem:
@@ -50,7 +50,7 @@ enamldef Main(MainWindow):
     PinholeCamera: camera:
         viewport = PerspectiveViewport()
         modelview_matrix::
-            glwin1.update()
+            renderer.trigger_update()
 
 
 
@@ -66,8 +66,6 @@ enamldef Main(MainWindow):
             mouse_handler = arcball
             key_handler = arcball
 
-            initialized::
-                renderer.trigger_update()
 
     ArcballCameraControl: arcball:
         modelview_matrix := camera.modelview_matrix
@@ -76,3 +74,14 @@ enamldef Main(MainWindow):
         position = np.array([0, 0, 5, 0])
         orientation = np.eye(4)
 
+        key_press_event::
+            try:
+                if change["value"].text.lower() == "v":
+                    bitem.visible = not bitem.visible
+                    print bitem.visible
+            except Exception, e:
+                pass
+
+
+    # initialized::
+    #     renderer.trigger_update()

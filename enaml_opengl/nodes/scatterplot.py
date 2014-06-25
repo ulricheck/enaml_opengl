@@ -1,6 +1,6 @@
 __author__ = 'jack'
 import numpy as np
-from atom.api import Value, Coerced, Bool
+from atom.api import Value, Coerced, Bool, observe
 from OpenGL.GL import *
 from enaml_opengl.scenegraph_node import GraphicsNode, d_
 from enaml_opengl import shaders
@@ -20,6 +20,10 @@ class ScatterPlotItem(GraphicsNode):
     size = d_(Value(1.0))
 
     px_mode = d_(Bool(True))
+
+    @observe("pos", "color", "size", "px_mode")
+    def _spi_trigger_update(self, change):
+        self.trigger_update()
 
 
     _point_texture = Value()

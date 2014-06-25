@@ -1,6 +1,6 @@
 __author__ = 'jack'
 import numpy as np
-from atom.api import Typed, List, Float
+from atom.api import Typed, List, Float, observe
 from OpenGL.GL import *
 from enaml_opengl.scenegraph_node import GraphicsNode, d_
 from enaml_opengl.geometry import Vec3d
@@ -18,6 +18,11 @@ class AxisItem(GraphicsNode):
     size       = d_(Typed(Vec3d, factory=lambda: Vec3d(1.0, 1.0, 1.0)))
     line_width = d_(Float(1.0))
     colors     = d_(List())
+
+    @observe("size", "line_width", "colors")
+    def _ai_trigger_update(self, change):
+        self.trigger_update()
+
 
     def _default_colors(self):
         return [(1, 0, 0, 0.6),  # x red

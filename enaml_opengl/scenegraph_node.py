@@ -1,6 +1,6 @@
 __author__ = 'jack'
 import numpy as np
-from atom.api import Atom, List, Dict, Typed, Bool, Float, Unicode, ForwardTyped, observe
+from atom.api import Dict, Typed, Bool, Float, Signal, observe
 from enaml.core.api import Declarative
 from enaml.core.declarative import d_
 
@@ -10,14 +10,33 @@ from OpenGL import GL
 from .util import print_exception
 
 
+
+
 class SceneGraphNode(Declarative):
+
+    #: notifiy on attribute changes
+    trigger_update = Signal()
+
+    def child_added(self, child):
+        super(SceneGraphNode, self).child_added(child)
+        if isinstance(child, SceneGraphNode):
+            print "subscribe to trigger_update"
+            child.observe("trigger_update", self.trigger_update)
+
+    def child_removed(self, child):
+        super(SceneGraphNode, self).child_removed(child)
+        if isinstance(child, SceneGraphNode):
+            child.unobserve("trigger_update", self.trigger_update)
 
     @property
     def node_path(self):
         return "/".join(a.name for a in reversed([self, ] + list(self.traverse_ancestors())))
 
+
     def initialize(self):
         for obj in self.traverse():
+            if obj is self:
+                continue
             if isinstance(obj, SceneGraphNode):
                 obj.initialize()
 
@@ -26,7 +45,6 @@ class SceneGraphNode(Declarative):
         for obj in self.traverse():
             if isinstance(obj, SceneGraphNode):
                 obj.render(context)
-
 
 
 
@@ -44,10 +62,17 @@ class GraphicsSceneGraphNode(SceneGraphNode):
     #: local transform
     transform = d_(Typed(np.ndarray, factory=lambda: np.identity(4)))
 
+    # add helpers to set translation, rotation, scale separately
+    # ensure synchronisation between transform and elements, but avoid cyclic updates using a _guard
+
+    @observe("visible", "depth", "transform")
+    def _gsgn_trigger_update(self, change):
+        self.trigger_update()
+
 
     def initialize(self):
+        super(GraphicsSceneGraphNode, self).initialize()
         self.initialize_node()
-        super(SceneGraphNode, self).initialize()
 
 
     def render(self, context):
@@ -104,6 +129,10 @@ class GraphicsNode(GraphicsSceneGraphNode):
     gl_options = d_(Dict())
     antialias  = d_(Bool(True))
 
+    @observe("gl_options", "antialias")
+    def _gn_trigger_update(self, change):
+        self.trigger_update()
+
     def setup_gl(self):
         for k,v in self.gl_options.items():
             if v is None:
@@ -129,6 +158,19 @@ class Group(GraphicsSceneGraphNode):
 
 
 class Scene3D(Declarative):
+
+    trigger_update = Signal()
+
+    def child_added(self, child):
+        super(Scene3D, self).child_added(child)
+        if isinstance(child, SceneGraphNode):
+            print "subscribe to trigger_update"
+            child.observe("trigger_update", self.trigger_update)
+
+    def child_removed(self, child):
+        super(Scene3D, self).child_removed(child)
+        if isinstance(child, SceneGraphNode):
+            child.unobserve("trigger_update", self.trigger_update)
 
     @property
     def nodes(self):

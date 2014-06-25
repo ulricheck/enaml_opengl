@@ -1,6 +1,6 @@
 __author__ = 'jack'
 
-from atom.api import Typed, ForwardTyped, observe, set_default, Event
+from atom.api import Typed, ForwardTyped, observe, set_default, Signal
 from enaml.core.declarative import d_
 from enaml.widgets.control import Control, ProxyControl
 
@@ -38,7 +38,7 @@ class OpenGLWidget(Control, MouseHandler, KeyHandler):
     renderer = d_(Typed(Renderer))
 
     #: trigger a widget update
-    update = d_(Event(), writable=False)
+    update = d_(Signal(), writable=False)
 
     mouse_handler = d_(Typed(MouseHandler))
     key_handler = d_(Typed(KeyHandler))

@@ -1,6 +1,6 @@
 __author__ = 'jack'
 import numpy as np
-from atom.api import Value, Coerced
+from atom.api import Value, Coerced, observe
 from OpenGL.GL import *
 from enaml_opengl.scenegraph_node import GraphicsNode, d_
 
@@ -16,7 +16,12 @@ class LinePlotItem(GraphicsNode):
     #: OR a tuple of floats specifying a single color for all spots.
     color = d_(Value([1.0, 1.0, 1.0, 0.5]))
 
-    linewidth = d_(Value(1.0))
+    line_width = d_(Value(1.0))
+
+    @observe("pos", "color", "line_width")
+    def _lpi_trigger_update(self, change):
+        self.trigger_update()
+
 
     def render_node(self, context):
         super(LinePlotItem, self).render_node(context)
@@ -31,7 +36,7 @@ class LinePlotItem(GraphicsNode):
                 glColorPointerf(self.color)
             else:
                 glColor4f(*self.color)
-            glLineWidth(self.linewidth)
+            glLineWidth(self.line_width)
             #glPointSize(self.width)
 
             if self.antialias:
