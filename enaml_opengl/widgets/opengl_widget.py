@@ -1,13 +1,12 @@
 __author__ = 'jack'
 
-from atom.api import Value, Typed, ForwardTyped, observe, set_default, Event
+from atom.api import Typed, ForwardTyped, observe, set_default, Event
 from enaml.core.declarative import d_
 from enaml.widgets.control import Control, ProxyControl
 
 
 from enaml_opengl.renderer import Renderer
-from enaml_opengl.events import KeyEvent, MouseEvent, WheelEvent, MouseHandler, KeyHandler
-from enaml_opengl.geometry import Size
+from enaml_opengl.events import MouseHandler, KeyHandler
 
 
 class ProxyOpenGLWidget(ProxyControl):

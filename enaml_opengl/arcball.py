@@ -22,7 +22,7 @@ class ArcballCameraControl(MouseHandler, KeyHandler):
     position = d_(Typed(np.ndarray))
     orientation = d_(Typed(np.ndarray))
 
-    sensitivity = d_(Float(0.1))
+    sensitivity = d_(Float(0.05))
 
     #: Cyclic notification guard flags.
     _guard = d_(Int(0))
@@ -67,15 +67,14 @@ class ArcballCameraControl(MouseHandler, KeyHandler):
                     dx = value.position.x - self.last_mouse_position.x
                     dy = value.position.y - self.last_mouse_position.y
 
-                    t = np.array([dx, dy, 0, 0]).T
+                    t = np.array([-dx, dy, 0, 0]).T
 
                     self.position = self.position - np.dot(self.orientation, t) * self.sensitivity
                     self.last_mouse_position = value.position
 
         elif name == "mouse_wheel_event":
             if self.BT_PAN[1] in value.modifiers:
-                print "delta", value.delta
-                dz = float(value.delta) / 120.
+                dz = float(value.delta) / 60.
                 t = np.array([0, 0, dz, 0]).T
                 self.position = self.position + np.dot(self.orientation, t) * self.sensitivity
 
@@ -98,7 +97,3 @@ class ArcballCameraControl(MouseHandler, KeyHandler):
 
         # self._guard &= ~UPDATE_DATA_FLAG
 
-
-    # @observe("modelview_matrix")
-    # def _debug(self, change):
-    #     print self.modelview_matrix

@@ -1,6 +1,6 @@
 __author__ = 'jack'
 import numpy as np
-from atom.api import Typed, List, Float, Bool
+from atom.api import Typed
 from OpenGL.GL import *
 from enaml_opengl.scenegraph_node import GraphicsNode, d_
 from enaml_opengl.geometry import Vec3d

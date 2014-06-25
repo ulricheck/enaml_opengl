@@ -11,6 +11,7 @@ qt_factories.QT_FACTORIES['OpenGLWidget'] = create_openglwidget
 from enaml.widgets.api import MainWindow, Container
 from enaml_opengl.widgets.opengl_widget import OpenGLWidget
 
+from enaml_opengl.geometry import Vec3d
 from enaml_opengl.renderer import MonoRenderer
 from enaml_opengl.camera import PinholeCamera
 from enaml_opengl.viewport import PerspectiveViewport
@@ -18,19 +19,33 @@ from enaml_opengl.viewport import PerspectiveViewport
 from enaml_opengl.scenegraph_node import Scene3D
 from enaml_opengl.arcball import ArcballCameraControl
 
-from enaml_opengl.nodes.coordinate_axes import AxisItem
-from enaml_opengl.nodes.grid import GridItem
+from enaml_opengl.nodes.api import (AxisItem, GridItem, LinePlotItem, BoxItem,
+    ScatterPlotItem)
 
 
 enamldef Main(MainWindow):
+
     title = 'OpenGL Widget Test'
 
-
     Scene3D: scene:
+
         GridItem:
-            pass
-        AxisItem: ai1:
+            depth = 10
+
+        AxisItem:
             line_width = 1.0
+
+        LinePlotItem:
+            pos = np.asarray([[0,0,0],[0,0.5,0],[0,0.5,0.5],[-0.5,0.5,0],[-0.5,0,-0.5],[-0.5,0,0],])
+            color = [1.0, 0.0, 0.0, 0.5]
+
+        BoxItem:
+            size = Vec3d(0.4, 0.2, 0.3)
+
+        ScatterPlotItem:
+            pos = np.asarray([[0,0,0],[0,0.5,0],[0,0.5,0.5],[-0.5,0.5,0],[-0.5,0,-0.5],[-0.5,0,0],])
+            color = [0.0, 0.0, 1.0, 0.5]
+            size = 10
 
     PinholeCamera: camera:
         viewport = PerspectiveViewport()

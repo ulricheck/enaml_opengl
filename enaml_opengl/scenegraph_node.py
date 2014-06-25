@@ -16,9 +16,14 @@ class SceneGraphNode(Declarative):
     def node_path(self):
         return "/".join(a.name for a in reversed([self, ] + list(self.traverse_ancestors())))
 
+    def initialize(self):
+        for obj in self.traverse():
+            if isinstance(obj, SceneGraphNode):
+                obj.initialize()
+
 
     def render(self, context):
-        for item in self.traverse():
+        for obj in self.traverse():
             if isinstance(obj, SceneGraphNode):
                 obj.render(context)
 
@@ -116,6 +121,11 @@ class GraphicsNode(GraphicsSceneGraphNode):
 
     def render_node(self, context):
         self.setup_gl()
+
+
+
+class Group(GraphicsSceneGraphNode):
+    pass
 
 
 class Scene3D(Declarative):

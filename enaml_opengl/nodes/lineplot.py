@@ -20,9 +20,9 @@ class LinePlotItem(GraphicsNode):
 
     def render_node(self, context):
         super(LinePlotItem, self).render_node(context)
+        glPushAttrib(GL_LINE_BIT)
 
         glEnableClientState(GL_VERTEX_ARRAY)
-
         try:
             glVertexPointerf(self.pos)
 
@@ -30,11 +30,8 @@ class LinePlotItem(GraphicsNode):
                 glEnableClientState(GL_COLOR_ARRAY)
                 glColorPointerf(self.color)
             else:
-                if isinstance(self.color, QtGui.QColor):
-                    glColor4f(*fn.glColor(self.color))
-                else:
-                    glColor4f(*self.color)
-            glLineWidth(self.width)
+                glColor4f(*self.color)
+            glLineWidth(self.linewidth)
             #glPointSize(self.width)
 
             if self.antialias:
@@ -47,3 +44,5 @@ class LinePlotItem(GraphicsNode):
         finally:
             glDisableClientState(GL_COLOR_ARRAY)
             glDisableClientState(GL_VERTEX_ARRAY)
+
+        glPopAttrib()

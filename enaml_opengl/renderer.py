@@ -24,17 +24,17 @@ class Renderer(Declarative):
     #: trigger an update to
     trigger_update = Signal()
 
-    def initialize_gl(self):
+    def initialize_gl(self, widget):
         for item in self.scene.nodes:
             item.initialize()
         self.trigger_update()
 
-    def resize_gl(self, size):
+    def resize_gl(self, widget, size):
         self.canvas_size = size
 
-    def paint_gl(self):
+    def paint_gl(self, widget):
         self.clear_screen()
-        self.render()
+        self.render(widget)
         # swap buffers manually ?
 
     def clear_screen(self):
@@ -47,7 +47,7 @@ class Renderer(Declarative):
             item.render(context.copy())
 
     # overwrite in renderer implementations
-    def render(self):
+    def render(self, widget):
         raise NotImplementedError
 
 
@@ -56,9 +56,9 @@ class MonoRenderer(Renderer):
     #: the camera / viewpoint
     camera = d_(Typed(Camera))
 
-    def render(self):
+    def render(self, widget):
         self.camera.setup()
-        context = dict()
+        context = dict(widget=widget)
         self.render_items(context)
 
     @observe('canvas_size')

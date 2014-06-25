@@ -9,7 +9,7 @@ from enaml.qt.qt_control import QtControl
 from enaml_opengl.widgets.opengl_widget import ProxyOpenGLWidget
 from enaml_opengl.events import KeyEvent, MouseEvent, WheelEvent, MouseHandler, KeyHandler
 from enaml_opengl.renderer import Renderer
-from enaml_opengl.geometry import Size
+from enaml_opengl.api import Size
 
 
 class QtOGLWidget(QtOpenGL.QGLWidget):
@@ -119,16 +119,16 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
     #--------------------------------------------------------------------------
     def on_initialize_gl(self):
         if self.renderer:
-            self.renderer.initialize_gl()
+            self.renderer.initialize_gl(self)
 
 
     def on_resize_gl(self, w, h):
         if self.renderer:
-            self.renderer.resize_gl(Size(w,h))
+            self.renderer.resize_gl(self, Size(w,h))
 
     def on_paint_gl(self):
         if self.renderer:
-            self.renderer.paint_gl()
+            self.renderer.paint_gl(self)
 
 
     # just pass the interaction events through for now
