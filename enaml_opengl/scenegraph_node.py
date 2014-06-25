@@ -115,3 +115,10 @@ class GraphicsNode(GraphicsSceneGraphNode):
 
     def render_node(self, context):
         self.setup_gl()
+
+
+class Scene3D(Declarative):
+
+    @property
+    def nodes(self):
+        return [c for c in self.children if isinstance(c, SceneGraphNode)]

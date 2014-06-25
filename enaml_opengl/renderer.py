@@ -7,12 +7,12 @@ from OpenGL.GL import *
 from .viewport import Viewport, PerspectiveViewport
 from .camera import Camera, PinholeCamera
 from .geometry import Size, Rect
-from .scenegraph_node import SceneGraphNode
+from .scenegraph_node import Scene3D
 
 class Renderer(Declarative):
 
     #: items
-    nodes = d_(List(SceneGraphNode))
+    scene = d_(Typed(Scene3D))
 
 
     #: the canvas size as reported by resizeGL
@@ -25,8 +25,9 @@ class Renderer(Declarative):
     trigger_update = Signal()
 
     def initialize_gl(self):
-        for item in self.nodes:
+        for item in self.scene.nodes:
             item.initialize()
+        self.trigger_update()
 
     def resize_gl(self, size):
         self.canvas_size = size
@@ -42,7 +43,7 @@ class Renderer(Declarative):
         glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT )
 
     def render_items(self, context):
-        for item in self.nodes:
+        for item in self.scene.nodes:
             item.render(context.copy())
 
     # overwrite in renderer implementations

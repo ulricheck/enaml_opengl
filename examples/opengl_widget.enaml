@@ -8,9 +8,6 @@ def create_openglwidget():
 
 qt_factories.QT_FACTORIES['OpenGLWidget'] = create_openglwidget
 
-
-from enaml.application import Application
-
 from enaml.widgets.api import MainWindow, Container
 from enaml_opengl.widgets.opengl_widget import OpenGLWidget
 
@@ -18,31 +15,29 @@ from enaml_opengl.renderer import MonoRenderer
 from enaml_opengl.camera import PinholeCamera
 from enaml_opengl.viewport import PerspectiveViewport
 
+from enaml_opengl.scenegraph_node import Scene3D
 from enaml_opengl.nodes.coordinate_axes import AxisItem
 from enaml_opengl.arcball import ArcballCameraControl
 
 
-# initialize modelview-matrix
-mv = np.eye(4)
-mv[:3, 3] = np.array([0., 0., 5.])
-
 enamldef Main(MainWindow):
     title = 'OpenGL Widget Test'
 
-    AxisItem: ai1:
-        line_width = 3.0
+
+    Scene3D: scene:
+        AxisItem: ai1:
+            line_width = 3.0
 
     PinholeCamera: camera:
         viewport = PerspectiveViewport()
         modelview_matrix::
-            print "repaint"
             glwin1.update()
 
 
 
     MonoRenderer: renderer:
         camera = camera
-        nodes << [ai1, ]
+        scene << scene
 
 
     Container:
