@@ -97,6 +97,7 @@ class GraphicsNode(GraphicsSceneGraphNode):
 
     #: options to be set before rendering
     gl_options = d_(Dict())
+    antialias  = d_(Bool(True))
 
     def setup_gl(self):
         for k,v in self.gl_options.items():

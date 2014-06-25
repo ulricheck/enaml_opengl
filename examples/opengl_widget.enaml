@@ -16,8 +16,10 @@ from enaml_opengl.camera import PinholeCamera
 from enaml_opengl.viewport import PerspectiveViewport
 
 from enaml_opengl.scenegraph_node import Scene3D
-from enaml_opengl.nodes.coordinate_axes import AxisItem
 from enaml_opengl.arcball import ArcballCameraControl
+
+from enaml_opengl.nodes.coordinate_axes import AxisItem
+from enaml_opengl.nodes.grid import GridItem
 
 
 enamldef Main(MainWindow):
@@ -25,8 +27,10 @@ enamldef Main(MainWindow):
 
 
     Scene3D: scene:
+        GridItem:
+            pass
         AxisItem: ai1:
-            line_width = 3.0
+            line_width = 1.0
 
     PinholeCamera: camera:
         viewport = PerspectiveViewport()

@@ -15,16 +15,15 @@ class AxisItem(GraphicsNode):
     z=green
     """
 
-    antialias  = d_(Bool(True))
     size       = d_(Typed(Vec3d, factory=lambda: Vec3d(1.0, 1.0, 1.0)))
     line_width = d_(Float(1.0))
     colors     = d_(List())
 
     def _default_colors(self):
         return [(1, 0, 0, 0.6),  # x red
-               (0, 1, 0, 0.6),  # y green
-               (0, 0, 1, 0.6),  # z blue
-               ]
+                (0, 1, 0, 0.6),  # y green
+                (0, 0, 1, 0.6),  # z blue
+                ]
 
     def render_node(self, context):
         #glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
