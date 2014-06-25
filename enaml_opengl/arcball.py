@@ -17,6 +17,8 @@ class ArcballCameraControl(MouseHandler, KeyHandler):
     start_transform = d_(Typed(np.ndarray))
     new_transform = d_(Typed(np.ndarray))
 
+    position = Typed(np.ndarray)
+
     def _get_center_radius(self):
         w = self.window_size.width()
         h = self.window_size.height()
@@ -33,6 +35,7 @@ class ArcballCameraControl(MouseHandler, KeyHandler):
             pos = value.position
             if "left" in value.buttons:
                 self.arcball = tf.Arcball(initial=self.start_transform)
+                self.position = tf.translation_from_matrix(self.start_transform)
                 self.arcball.place(*self._get_center_radius())
                 self.arcball.down((pos.x, pos.y))
 
@@ -41,7 +44,9 @@ class ArcballCameraControl(MouseHandler, KeyHandler):
             if "left" in value.buttons:
                 if self.arcball is not None:
                     self.arcball.drag((pos.x, pos.y))
-                    self.new_transform = self.arcball.matrix()
+                    if self.position is not None:
+                        tm = tf.translation_matrix(self.position)
+                        self.new_transform = np.dot(tm, self.arcball.matrix())
 
         elif name == "mouse_press_event":
             pos = value.position

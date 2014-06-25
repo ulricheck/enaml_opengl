@@ -40,8 +40,9 @@ enamldef Main(MainWindow):
             glwin1.update()
 
     ArcballCameraControl: arcball:
+        window_size << glwin1.size
         start_transform = camera.modelview_matrix
-        new_transform >> camera.modelview_matrix
+        new_transform := camera.modelview_matrix
 
 
 
@@ -55,11 +56,9 @@ enamldef Main(MainWindow):
         OpenGLWidget: glwin1:
             minimum_size = (800, 600)
             renderer = renderer
-            size >> arcball.window_size
             mouse_handler = arcball
             key_handler = arcball
 
             initialized::
-                print "opengl widget is initialized"
                 renderer.trigger_update()
 
