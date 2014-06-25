@@ -6,6 +6,10 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
+from distutils.core import setup, Extension
+import numpy
+
+
 setup(name = "enaml_opengl",
       version = '0.1',
       description = "OpenGL support for enaml",
@@ -20,6 +24,9 @@ setup(name = "enaml_opengl",
         'atom',
         'enaml',
       ],
+      ext_modules=[Extension('enaml_opengl.external._transformations',
+                             ['enaml_opengl/external/transformations.c'],
+                             include_dirs=[numpy.get_include()])],
       zip_safe=False,
       long_description = """\
 Use OpenGL in enaml applications""",

@@ -19,13 +19,12 @@ from enaml_opengl.camera import PinholeCamera
 from enaml_opengl.viewport import PerspectiveViewport
 
 from enaml_opengl.nodes.coordinate_axes import AxisItem
-
+from enaml_opengl.arcball import ArcballCameraControl
 
 
 # initialize modelview-matrix
 mv = np.eye(4)
 mv[0:3, 3] = np.array([0., 0., 5.])
-mv = np.linalg.inv(mv)
 
 enamldef Main(MainWindow):
     title = 'OpenGL Widget Test'
@@ -33,13 +32,18 @@ enamldef Main(MainWindow):
     AxisItem: ai1:
         line_width = 3.0
 
-    #ArcballCameraControl: arcball:
-    #   sensitivity = 1.0
-
     PinholeCamera: camera:
         viewport = PerspectiveViewport()
         modelview_matrix = mv
-        #modelview_matrix = arcball.inv_modelview_matrix
+        modelview_matrix::
+            print "repaint"
+            glwin1.update()
+
+    ArcballCameraControl: arcball:
+        start_transform = camera.modelview_matrix
+        new_transform >> camera.modelview_matrix
+
+
 
     MonoRenderer: renderer:
         camera = camera
@@ -48,24 +52,14 @@ enamldef Main(MainWindow):
 
 
     Container:
-        OpenGLWidget:
+        OpenGLWidget: glwin1:
             minimum_size = (800, 600)
             renderer = renderer
-            mouse_press_event::
-                print "mouse press", change["value"].position
-                #arcball.mouse_pressed(change["value"])
-            mouse_move_event::
-                print "mouse move", change["value"].position
-                #arcball.mouse_moved(change["value"])
-            mouse_wheel_event::
-                print "mouse wheel", change["value"].delta
-                #arcball.mouse_wheel(change["value"])
-            key_press_event::
-                ev = change["value"]
-                if not ev.is_modifier:
-                    print "key press", ev.text
-                    self.update()
+            size >> arcball.window_size
+            mouse_handler = arcball
+            key_handler = arcball
 
             initialized::
                 print "opengl widget is initialized"
                 renderer.trigger_update()
+

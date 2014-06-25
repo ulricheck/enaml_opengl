@@ -6,7 +6,7 @@ from enaml.widgets.control import Control, ProxyControl
 
 
 from enaml_opengl.renderer import Renderer
-from enaml_opengl.events import KeyEvent, MouseEvent, WheelEvent
+from enaml_opengl.events import KeyEvent, MouseEvent, WheelEvent, MouseHandler, KeyHandler
 from enaml_opengl.geometry import Size
 
 
@@ -20,11 +20,17 @@ class ProxyOpenGLWidget(ProxyControl):
     def set_renderer(self, renderer):
          raise NotImplementedError
 
+    def set_mouse_handler(self, mouse_handler):
+         raise NotImplementedError
+
+    def set_key_handler(self, key_handler):
+         raise NotImplementedError
+
     def update(self):
         raise NotImplementedError
 
 
-class OpenGLWidget(Control):
+class OpenGLWidget(Control, MouseHandler, KeyHandler):
     """ An extremely simple widget for displaying OpenGL.
 
     """
@@ -38,13 +44,8 @@ class OpenGLWidget(Control):
     #: trigger a widget update
     update = d_(Event(), writable=False)
 
-    #: interaction events
-    mouse_press_event = d_(Event(MouseEvent), writable=False)
-    mouse_release_event = d_(Event(MouseEvent), writable=False)
-    mouse_wheel_event = d_(Event(WheelEvent), writable=False)
-    mouse_move_event = d_(Event(MouseEvent), writable=False)
-    key_press_event = d_(Event(KeyEvent), writable=False)
-    key_release_event = d_(Event(KeyEvent), writable=False)
+    mouse_handler = d_(Typed(MouseHandler))
+    key_handler = d_(Typed(KeyHandler))
 
     #: An opengl control expands freely in height and width by default.
     hug_width = set_default('ignore')
@@ -71,3 +72,12 @@ class OpenGLWidget(Control):
         """ An observer which propagates update events to the widget
         """
         self.proxy.update()
+
+
+    @observe('mouse_handler' )
+    def _update_mouse_handler(self, change):
+        """ An observer which connects key/mouse handlers
+        """
+        print "update mouse handler"
+        super(OpenGLWidget, self)._update_proxy(change)
+

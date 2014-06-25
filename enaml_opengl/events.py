@@ -1,6 +1,9 @@
 __author__ = 'jack'
 from enaml.qt import QtCore
-from atom.api import Atom, Enum, Typed, Int, List, Bool
+from atom.api import Atom, Enum, Typed, Int, List, Bool, Event
+from enaml.core.api import Declarative
+from enaml.core.declarative import d_
+
 from enaml_opengl.geometry import Pos
 
 
@@ -132,3 +135,15 @@ class KeyEvent(InputEvent):
                    count=ev.count(),
                    )
 
+
+class MouseHandler(Declarative):
+    # mouse handler
+    mouse_press_event = d_(Event(MouseEvent), writable=False)
+    mouse_release_event = d_(Event(MouseEvent), writable=False)
+    mouse_wheel_event = d_(Event(WheelEvent), writable=False)
+    mouse_move_event = d_(Event(MouseEvent), writable=False)
+
+class KeyHandler(Declarative):
+    # key handler
+    key_press_event = d_(Event(KeyEvent), writable=False)
+    key_release_event = d_(Event(KeyEvent), writable=False)

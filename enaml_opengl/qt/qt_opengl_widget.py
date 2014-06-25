@@ -7,7 +7,7 @@ from atom.api import Typed, Int
 from enaml.qt.qt_control import QtControl
 
 from enaml_opengl.widgets.opengl_widget import ProxyOpenGLWidget
-from enaml_opengl.events import KeyEvent, MouseEvent, WheelEvent
+from enaml_opengl.events import KeyEvent, MouseEvent, WheelEvent, MouseHandler, KeyHandler
 from enaml_opengl.renderer import Renderer
 from enaml_opengl.geometry import Size
 
@@ -73,6 +73,9 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
 
     renderer = Typed(Renderer)
 
+    key_handler = Typed(KeyHandler)
+    mouse_handler = Typed(MouseHandler)
+
     #: Cyclic notification guard. This a bitfield of multiple guards.
     _guard = Int(0)
 
@@ -89,6 +92,17 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
         widget = QtOGLWidget(self, self.parent_widget(),)
 
         self.widget = widget
+
+        # default handler is the declaration object
+        if self.declaration.key_handler is None:
+            self.key_handler = self.declaration
+        else:
+            self.key_handler = self.declaration.key_handler
+
+        if self.declaration.mouse_handler is None:
+            self.mouse_handler = self.declaration
+        else:
+            self.mouse_handler = self.declaration.mouse_handler
 
 
 
@@ -119,22 +133,22 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
 
     # just pass the interaction events through for now
     def on_mouse_press_event(self, ev):
-        self.declaration.mouse_press_event(MouseEvent.from_qt(ev))
+        self.mouse_handler.mouse_press_event(MouseEvent.from_qt(ev))
 
     def on_mouse_release_event(self, ev):
-        self.declaration.mouse_release_event(MouseEvent.from_qt(ev))
+        self.mouse_handler.mouse_release_event(MouseEvent.from_qt(ev))
 
     def on_mouse_wheel_event(self, ev):
-        self.declaration.mouse_wheel_event(WheelEvent.from_qt(ev))
+        self.mouse_handler.mouse_wheel_event(WheelEvent.from_qt(ev))
 
     def on_mouse_move_event(self, ev):
-        self.declaration.mouse_move_event(MouseEvent.from_qt(ev))
+        self.mouse_handler.mouse_move_event(MouseEvent.from_qt(ev))
 
     def on_key_press_event(self, ev):
-        self.declaration.key_press_event(KeyEvent.from_qt(ev))
+        self.key_handler.key_press_event(KeyEvent.from_qt(ev))
 
     def on_key_release_event(self, ev):
-        self.declaration.key_release_event(KeyEvent.from_qt(ev))
+        self.key_handler.key_release_event(KeyEvent.from_qt(ev))
 
 
     #--------------------------------------------------------------------------
@@ -143,6 +157,11 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
     def set_renderer(self, renderer):
         self.renderer = renderer
 
+    def set_mouse_handler(self, mouse_handler):
+        self.mouse_handler = mouse_handler
+
+    def set_key_handler(self, key_handler):
+        self.key_handler = key_handler
 
     def update(self):
         """

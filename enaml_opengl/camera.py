@@ -21,6 +21,7 @@ class Camera(Declarative):
 
     #: the modelview matrix
     modelview_matrix  = d_(Typed(np.ndarray, factory=lambda: np.identity(4)))
+    inv_modelview_matrix  = d_(Typed(np.ndarray, factory=lambda: np.identity(4)))
 
     #: initialize default viewport
     def _default_viewport(self):
@@ -47,7 +48,7 @@ class Camera(Declarative):
 
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
-        glMultMatrixf(self.modelview_matrix.transpose())
+        glMultMatrixf(self.inv_modelview_matrix.transpose())
 
     def _device_coordinates(self):
         vp = self.viewport.box
@@ -60,6 +61,11 @@ class Camera(Declarative):
         bottom = t * (vp.y * (2. / vp.height) - 1)
         top = t * (vp.height * (2. / vp.height) - 1)
         return (left, right, bottom, top)
+
+
+    @observe("modelview_matrix")
+    def _update_inv_mv(self, change):
+        self.inv_modelview_matrix = np.linalg.inv(self.modelview_matrix)
 
 
 class PinholeCamera(Camera):
