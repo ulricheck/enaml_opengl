@@ -67,6 +67,7 @@ class OpenGLWidget(Control, MouseHandler, KeyHandler):
     def _update_canvas(self, change):
         """ An observer which propagates update events to the widget
         """
+        print "update"
         self.proxy.update()
 
 

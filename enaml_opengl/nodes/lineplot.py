@@ -18,9 +18,9 @@ class LinePlotItem(GraphicsNode):
 
     line_width = d_(Value(1.0))
 
-    @observe("pos", "color", "line_width")
-    def _lpi_trigger_update(self, change):
-        self.trigger_update()
+    # @observe("pos", "color", "line_width")
+    # def _lpi_trigger_update(self, change):
+    #     self.trigger_update()
 
 
     def render_node(self, context):

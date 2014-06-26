@@ -28,21 +28,27 @@ enamldef Main(MainWindow):
     title = 'OpenGL Widget Test'
 
     Scene3D: scene:
+        name = "scene"
 
         GridItem:
+            name = "grid"
             depth = 10
 
         AxisItem:
+            name = "axis"
             line_width = 1.0
 
         LinePlotItem:
+            name = "lineplot"
             pos = np.asarray([[0,0,0],[0,0.5,0],[0,0.5,0.5],[-0.5,0.5,0],[-0.5,0,-0.5],[-0.5,0,0],])
             color = [1.0, 0.0, 0.0, 0.5]
 
         BoxItem: bitem:
+            name = "box"
             size = Vec3d(0.4, 0.2, 0.3)
 
         ScatterPlotItem:
+            name = "scatterplot"
             pos = np.asarray([[0,0,0],[0,0.5,0],[0,0.5,0.5],[-0.5,0.5,0],[-0.5,0,-0.5],[-0.5,0,0],])
             color = [0.0, 0.0, 1.0, 0.5]
             size = 10
@@ -51,20 +57,6 @@ enamldef Main(MainWindow):
         viewport = PerspectiveViewport()
         modelview_matrix::
             renderer.trigger_update()
-
-
-
-    MonoRenderer: renderer:
-        camera = camera
-        scene << scene
-
-
-    Container:
-        OpenGLWidget: glwin1:
-            minimum_size = (800, 600)
-            renderer = renderer
-            mouse_handler = arcball
-            key_handler = arcball
 
 
     ArcballCameraControl: arcball:
@@ -83,5 +75,14 @@ enamldef Main(MainWindow):
                 pass
 
 
-    # initialized::
-    #     renderer.trigger_update()
+    MonoRenderer: renderer:
+        camera = camera
+        scene << scene
+
+
+    Container:
+        OpenGLWidget: glwin1:
+            minimum_size = (800, 600)
+            renderer = renderer
+            mouse_handler = arcball
+            key_handler = arcball

@@ -21,9 +21,9 @@ class ScatterPlotItem(GraphicsNode):
 
     px_mode = d_(Bool(True))
 
-    @observe("pos", "color", "size", "px_mode")
-    def _spi_trigger_update(self, change):
-        self.trigger_update()
+    # @observe("pos", "color", "size", "px_mode")
+    # def _spi_trigger_update(self, change):
+    #     self.trigger_update()
 
 
     _point_texture = Value()

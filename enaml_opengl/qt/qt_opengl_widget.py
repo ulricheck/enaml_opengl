@@ -89,6 +89,7 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
         """
         if self.declaration.renderer is not None:
             self.set_renderer(self.declaration.renderer)
+
         widget = QtOGLWidget(self, self.parent_widget(),)
 
         self.widget = widget
@@ -155,7 +156,12 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
     # OpenGLWidget API
     #--------------------------------------------------------------------------
     def set_renderer(self, renderer):
+        if self.renderer is not None:
+            self.renderer.unobserve("trigger_update", self.update)
+
         self.renderer = renderer
+
+        self.renderer.observe("trigger_update", self.update)
 
     def set_mouse_handler(self, mouse_handler):
         self.mouse_handler = mouse_handler

@@ -13,9 +13,9 @@ class BoxItem(GraphicsNode):
     size = d_(Typed(Vec3d, factory=lambda: Vec3d(1.0, 1.0, 1.0)))
     color = d_(Value([1.0, 1.0, 1.0, 0.5]))
 
-    @observe("size", "color")
-    def _bi_trigger_update(self, change):
-        self.trigger_update()
+    # @observe("size", "color")
+    # def _bi_trigger_update(self, change):
+    #     self.trigger_update()
 
 
 

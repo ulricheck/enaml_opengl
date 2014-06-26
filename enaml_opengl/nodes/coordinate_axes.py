@@ -19,9 +19,9 @@ class AxisItem(GraphicsNode):
     line_width = d_(Float(1.0))
     colors     = d_(List())
 
-    @observe("size", "line_width", "colors")
-    def _ai_trigger_update(self, change):
-        self.trigger_update()
+    # @observe("size", "line_width", "colors")
+    # def _ai_trigger_update(self, change):
+    #     self.trigger_update()
 
 
     def _default_colors(self):

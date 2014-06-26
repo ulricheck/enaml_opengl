@@ -30,12 +30,10 @@ class Renderer(Declarative):
 
     def initialize_gl(self, widget):
         for item in self.scene.nodes:
-            item.initialize()
-        self.observe("scene.trigger_update", self.check_trigger_update)
-        self.trigger_update()
+            item.initialize_gl()
+        self.scene.observe("trigger_update", self.check_trigger_update)
 
     def check_trigger_update(self):
-        print "triggered update"
         if self._guard & RENDERING_FLAG:
             return
         self.trigger_update()
@@ -47,7 +45,6 @@ class Renderer(Declarative):
     def paint_gl(self, widget):
         if self._guard & RENDERING_FLAG:
             return
-
         self._guard |= RENDERING_FLAG
 
         self.clear_screen()

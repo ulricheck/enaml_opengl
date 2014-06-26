@@ -23,6 +23,9 @@ class Camera(Declarative):
     modelview_matrix  = d_(Typed(np.ndarray, factory=lambda: np.identity(4)))
     inv_modelview_matrix  = d_(Typed(np.ndarray, factory=lambda: np.identity(4)))
 
+    near = d_(Float(0.001))
+    far  = d_(Float(10.))
+
     #: initialize default viewport
     def _default_viewport(self):
         return PerspectiveViewport()
@@ -70,8 +73,6 @@ class Camera(Declarative):
 
 class PinholeCamera(Camera):
 
-    near = d_(Float(0.001))
-    far  = d_(Float(10.))
     fov  = d_(Float(60))
 
 

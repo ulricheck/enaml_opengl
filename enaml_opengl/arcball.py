@@ -47,13 +47,15 @@ class ArcballCameraControl(MouseHandler, KeyHandler):
 
         if name == "mouse_press_event":
             pos = value.position
+            self.last_mouse_position = value.position
+
             if self.BT_ROTATE[0] in value.buttons and self.BT_ROTATE[1] in value.modifiers:
                 self.arcball = tf.Arcball(initial=np.linalg.inv(self.orientation))
                 self.arcball.place(*self._get_center_radius())
                 self.arcball.down((pos.x, pos.y))
 
-            elif self.BT_PAN[0] in value.buttons and self.BT_PAN[1] in value.modifiers:
-                self.last_mouse_position = value.position
+            # elif self.BT_PAN[0] in value.buttons and self.BT_PAN[1] in value.modifiers:
+            #     pass
 
         elif name == "mouse_move_event":
             pos = value.position
@@ -64,6 +66,7 @@ class ArcballCameraControl(MouseHandler, KeyHandler):
 
             elif self.BT_PAN[0] in value.buttons and self.BT_PAN[1] in value.modifiers:
                 if value.position != self.last_mouse_position:
+                    print value.position, self.last_mouse_position
                     dx = value.position.x - self.last_mouse_position.x
                     dy = value.position.y - self.last_mouse_position.y
 

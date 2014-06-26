@@ -1,6 +1,6 @@
 __author__ = 'jack'
 import numpy as np
-from atom.api import Dict, Typed, Bool, Float, Signal, observe
+from atom.api import Dict, Typed, Bool, Float, Signal, ForwardTyped, observe
 from enaml.core.api import Declarative
 from enaml.core.declarative import d_
 
@@ -14,31 +14,31 @@ from .util import print_exception
 
 class SceneGraphNode(Declarative):
 
-    #: notifiy on attribute changes
-    trigger_update = Signal()
-
+    scene_root = ForwardTyped(lambda: Scene3D)
     def child_added(self, child):
         super(SceneGraphNode, self).child_added(child)
         if isinstance(child, SceneGraphNode):
-            print "subscribe to trigger_update"
-            child.observe("trigger_update", self.trigger_update)
+            child.scene_root = self.scene_root
 
     def child_removed(self, child):
         super(SceneGraphNode, self).child_removed(child)
         if isinstance(child, SceneGraphNode):
-            child.unobserve("trigger_update", self.trigger_update)
+            child.scene_root = None
+
+    def trigger_update(self):
+        self.scene_root.trigger_update()
 
     @property
     def node_path(self):
         return "/".join(a.name for a in reversed([self, ] + list(self.traverse_ancestors())))
 
 
-    def initialize(self):
+    def initialize_gl(self):
         for obj in self.traverse():
             if obj is self:
                 continue
             if isinstance(obj, SceneGraphNode):
-                obj.initialize()
+                obj.initialize_gl()
 
 
     def render(self, context):
@@ -70,8 +70,8 @@ class GraphicsSceneGraphNode(SceneGraphNode):
         self.trigger_update()
 
 
-    def initialize(self):
-        super(GraphicsSceneGraphNode, self).initialize()
+    def initialize_gl(self):
+        super(GraphicsSceneGraphNode, self).initialize_gl()
         self.initialize_node()
 
 
@@ -164,13 +164,12 @@ class Scene3D(Declarative):
     def child_added(self, child):
         super(Scene3D, self).child_added(child)
         if isinstance(child, SceneGraphNode):
-            print "subscribe to trigger_update"
-            child.observe("trigger_update", self.trigger_update)
+            child.scene_root = self
 
     def child_removed(self, child):
         super(Scene3D, self).child_removed(child)
         if isinstance(child, SceneGraphNode):
-            child.unobserve("trigger_update", self.trigger_update)
+            child.scene_root = None
 
     @property
     def nodes(self):
