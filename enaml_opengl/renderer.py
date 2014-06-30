@@ -74,7 +74,7 @@ class MonoRenderer(Renderer):
 
     def render(self, widget):
         self.camera.setup()
-        context = dict(widget=widget)
+        context = dict(widget=widget, camera=self.camera, canvas_size=self.canvas_size)
         self.render_items(context)
 
     @observe('canvas_size')

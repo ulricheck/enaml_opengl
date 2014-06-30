@@ -25,7 +25,7 @@ class ProxyOpenGLWidget(ProxyControl):
     def set_key_handler(self, key_handler):
          raise NotImplementedError
 
-    def update(self):
+    def update(self, *args):
         raise NotImplementedError
 
 
@@ -38,7 +38,7 @@ class OpenGLWidget(Control, MouseHandler, KeyHandler):
     renderer = d_(Typed(Renderer))
 
     #: trigger a widget update
-    update = d_(Signal(), writable=False)
+    update = d_(Signal())
 
     mouse_handler = d_(Typed(MouseHandler))
     key_handler = d_(Typed(KeyHandler))
@@ -64,10 +64,9 @@ class OpenGLWidget(Control, MouseHandler, KeyHandler):
         self.observe("renderer.trigger_update", self.proxy.update)
 
     @observe('update')
-    def _update_canvas(self, change):
+    def _update_canvas(self, *args):
         """ An observer which propagates update events to the widget
         """
-        print "update"
         self.proxy.update()
 
 

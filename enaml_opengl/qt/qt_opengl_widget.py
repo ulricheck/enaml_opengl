@@ -169,7 +169,7 @@ class QtOpenGLWidget(QtControl, ProxyOpenGLWidget):
     def set_key_handler(self, key_handler):
         self.key_handler = key_handler
 
-    def update(self):
+    def update(self, *args):
         """
         notify OpenGL widget to redraw
         """
