@@ -33,11 +33,16 @@ class Renderer(Declarative):
             item.initialize_gl()
         self.scene.observe("trigger_update", self.check_trigger_update)
 
+    def enable_trigger(self, value):
+        if value:
+            self._guard &= ~RENDERING_FLAG
+        else:
+            self._guard |= RENDERING_FLAG
+
     def check_trigger_update(self):
         if self._guard & RENDERING_FLAG:
             return
         self.trigger_update()
-
 
     def resize_gl(self, widget, size):
         self.canvas_size = size

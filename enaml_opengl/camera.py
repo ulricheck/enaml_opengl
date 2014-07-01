@@ -33,7 +33,11 @@ class Camera(Declarative):
     #: initialize default projection matrix as pinhole camera
     def _default_projection_matrix(self):
         vp = self.viewport
-        left, right, bottom, top = self._device_coordinates()
+        # initialize with some default FOV in case the subclass does not specifiy it.
+        fov = 60
+        if hasattr(self, "fov"):
+            fov = self.fov
+        left, right, bottom, top = self._device_coordinates(vp, fov)
         return vp.calculate_projection_matrix(left, right, bottom, top,
                                               0.001, 1000., 60)
 
@@ -53,18 +57,16 @@ class Camera(Declarative):
         glLoadIdentity()
         glMultMatrixf(self.inv_modelview_matrix.T)
 
-    def _device_coordinates(self):
-        vp = self.viewport.box
+    def _device_coordinates(self, vp, fov):
+        box = vp.box
+        r = self.near * np.tan(fov * 0.5 * np.pi / 180.)
+        t = r * box.height / box.width
 
-        r = self.near * np.tan(self.fov * 0.5 * np.pi / 180.)
-        t = r * vp.height / vp.width
-
-        left = r * (vp.x * (2. / vp.width) - 1)
-        right = r * (vp.width * (2. / vp.width) - 1)
-        bottom = t * (vp.y * (2. / vp.height) - 1)
-        top = t * (vp.height * (2. / vp.height) - 1)
+        left = r * (box.x * (2. / box.width) - 1)
+        right = r * (box.width * (2. / box.width) - 1)
+        bottom = t * (box.y * (2. / box.height) - 1)
+        top = t * (box.height * (2. / box.height) - 1)
         return (left, right, bottom, top)
-
 
     @observe("modelview_matrix")
     def _update_inv_mv(self, change):
@@ -84,6 +86,7 @@ class PinholeCamera(Camera):
         recomputes the projection matrix if any of the inputs chnage
         :return:
         """
-        left, right, bottom, top = self._device_coordinates()
+        left, right, bottom, top = self._device_coordinates(self.viewport, self.fov)
         self.projection_matrix = self.viewport.calculate_projection_matrix(left, right, bottom, top,
                                                                            self.near, self.far, self.fov)
+
