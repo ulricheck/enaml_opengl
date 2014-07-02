@@ -92,18 +92,27 @@ class GraphicsSceneGraphNode(SceneGraphNode):
                     # for gl debugging and object picking
                     # glLoadName(id(item))
                     # self._itemNames[id(item)] = item
+
+                    glMatrixMode(GL_MODELVIEW)
+                    glPushMatrix()
+
+                    glMultMatrixf(item.transform.T)
+
                     item.render_node(context)
                 except:
                     print_exception()
                     msg = "Error while drawing item %s." % self.node_path
                     print msg
                 finally:
+                    glMatrixMode(GL_MODELVIEW)
+                    glPopMatrix()
+
                     glPopAttrib()
             else:
                 glMatrixMode(GL_MODELVIEW)
                 glPushMatrix()
                 try:
-                    glMultMatrixf(item.transform.transpose())
+                    glMultMatrixf(item.transform.T)
                     item.render(context)
                 finally:
                     glMatrixMode(GL_MODELVIEW)
