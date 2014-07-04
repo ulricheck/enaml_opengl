@@ -57,7 +57,6 @@ class OpenGLWidget(Control, MouseHandler, KeyHandler):
     def _update_proxy(self, change):
         """ An observer which sends state change to the proxy.
         """
-        # The superclass handler implementation is sufficient.
         if self.renderer:
             self.unobserve("renderer.trigger_update", self.proxy.update)
         super(OpenGLWidget, self)._update_proxy(change)
@@ -70,10 +69,9 @@ class OpenGLWidget(Control, MouseHandler, KeyHandler):
         self.proxy.update()
 
 
-    @observe('mouse_handler' )
-    def _update_mouse_handler(self, change):
+    @observe('mouse_handler', 'key_handler')
+    def _update_handlers(self, change):
         """ An observer which connects key/mouse handlers
         """
-        print "update mouse handler"
         super(OpenGLWidget, self)._update_proxy(change)
 
