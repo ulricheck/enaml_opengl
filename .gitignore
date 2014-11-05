@@ -1,0 +1,6 @@
+.idea/
+enaml_opengl.egg-info/
+*.pyc
+build/
+dist/
+*.pyd
