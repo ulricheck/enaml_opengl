@@ -23,6 +23,7 @@ class QtOGLWidget(QtOpenGL.QGLWidget):
 
         self.proxy = proxy
 
+        self.size = QtCore.QSize(400, 300)
         # eventually handle repeating keys with timer as in pyqtgraph GLViewWidget
 
         self.setFocusPolicy(QtCore.Qt.ClickFocus)

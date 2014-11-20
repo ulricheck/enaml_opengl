@@ -8,6 +8,9 @@ from .camera import Camera
 from .geometry import Size, Rect
 from .scenegraph_node import Scene3D
 
+import logging
+log = logging.getLogger(__name__)
+
 #: Cyclic guard flags
 RENDERING_FLAG = 0x1
 
@@ -52,9 +55,12 @@ class Renderer(Declarative):
             return
         self._guard |= RENDERING_FLAG
 
-        self.clear_screen()
-        self.render(widget)
-        # swap buffers manually ?
+        try:
+            self.clear_screen()
+            self.render(widget)
+            # swap buffers manually ?
+        except Exception, e:
+            log.exception(e)
 
         self._guard &= ~RENDERING_FLAG
 
