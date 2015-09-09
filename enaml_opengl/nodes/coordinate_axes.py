@@ -15,7 +15,7 @@ class AxisItem(GraphicsNode):
     z=green
     """
 
-    size       = d_(Typed(Vec3d, factory=lambda: Vec3d(1.0, 1.0, 1.0)))
+    size       = d_(Typed(Vec3d, factory=lambda: Vec3d(.1, .1, .1)))
     line_width = d_(Float(1.0))
     colors     = d_(List())
 
