@@ -102,7 +102,7 @@ class GraphicsSceneGraphNode(SceneGraphNode):
                 except:
                     print_exception()
                     msg = "Error while drawing item %s." % self.node_path
-                    print msg
+                    print (msg)
                 finally:
                     glMatrixMode(GL_MODELVIEW)
                     glPopMatrix()

@@ -2,7 +2,8 @@ __author__ = 'jack'
 
 import numpy as np
 
-from enaml.qt import QtCore, QtOpenGL
+from enaml.qt import QtCore
+from enaml_opengl.qt import QtOpenGL
 from atom.api import Typed, Int
 from enaml.qt.qt_control import QtControl
 

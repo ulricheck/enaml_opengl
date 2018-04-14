@@ -70,7 +70,7 @@ enamldef Main(MainWindow):
             try:
                 if change["value"].text.lower() == "v":
                     bitem.visible = not bitem.visible
-                    print bitem.visible
+                    print(bitem.visible)
             except Exception, e:
                 pass
 

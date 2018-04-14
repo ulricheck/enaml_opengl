@@ -59,7 +59,7 @@ class Renderer(Declarative):
             self.clear_screen()
             self.render(widget)
             # swap buffers manually ?
-        except Exception, e:
+        except Exception as e:
             log.exception(e)
 
         self._guard &= ~RENDERING_FLAG
