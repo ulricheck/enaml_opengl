@@ -4,3 +4,4 @@ enaml_opengl.egg-info/
 build/
 dist/
 *.pyd
+/enaml_opengl/external/_transformations.cpython-36m-darwin.so
